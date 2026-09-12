@@ -1,4 +1,4 @@
-# Sentinel AI — Real-Time Fraud Detection with MLOps Pipeline
+# Sentinel AI Real-Time Fraud Detection with MLOps Pipeline
 
 An end-to-end, production-grade fraud detection system combining **Apache Kafka**, **Apache Spark**, **XGBoost**, **MLflow**, **Apache Airflow**, and a **Gemini-powered LLM agent** for autonomous triage.
 
