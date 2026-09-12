@@ -1,0 +1,41 @@
+# Environment variables & secrets
+.env
+*.env
+
+# Large dataset (Download from Kaggle: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
+creditcard.csv
+*.csv
+
+# Python byte code and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Airflow logs and temporary files
+airflow.db
+airflow.cfg
+logs/
+
+# Model checkpoints / runs (if not committed)
+# model_versions/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS-generated files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,76 @@
+services:
+  # 1. Apache Kafka (Modern KRaft Mode - No ZooKeeper!)
+  kafka:
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:9093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  # 2. Apache Spark (Stream Processing Engine)
+  spark:
+    image: bitnamilegacy/spark:3.5.0-debian-12-r18
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - "8080:8080"   # Spark Web UI
+      - "7077:7077"   # Spark Master Port
+
+  # 3. Apache Airflow (Workflow Orchestrator)
+  airflow:
+    image: sentinel-airflow:latest
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    volumes:
+      - ./dags:/opt/airflow/dags              # Retraining DAG
+      - ./:/opt/airflow/project               # Full project (model, data)
+      - airflow_logs:/opt/airflow/logs
+      - mlflow_data:/mlflow
+    ports:
+      - "8081:8080"   # Airflow UI  →  http://localhost:8081
+    command: standalone
+    depends_on:
+      - mlflow
+      - kafka
+
+  # 4. MLflow Tracking Server (Model Registry + Experiment Tracking)
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.14.1
+    container_name: mlflow
+    ports:
+      - "5000:5000"   # MLflow UI  →  http://localhost:5000
+    volumes:
+      - mlflow_data:/mlflow
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+
+  # 5. Redis (Feature Cache — optional, for rolling-window features)
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"   # Redis port
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+volumes:
+  mlflow_data:
+  airflow_logs:
