@@ -22,8 +22,8 @@ An end-to-end, production-grade fraud detection system combining **Apache Kafka*
        │               │  └────┬─────┘  └──────────┘  └──────────┘   │
        │               │       │                                     │
        │               │  ┌────▼─────────────────┐                   │
-       │               │  │ Promote / Reject      │                  │
-       │               │  │ (Champion/Challenger) │                  │
+       │               │  │ Promote / Reject     │                   │
+       │               │  │ (Champion/Challenger)│                   │
        │               │  └──────────────────────┘                   │
        │               └──────────────┬──────────────────────────────┘
        │                              │  Hot-swap fraud_model.joblib
