@@ -8,22 +8,22 @@ An end-to-end, production-grade fraud detection system combining **Apache Kafka*
 
 ```
                        ┌─────────────────────────────────────────────┐
-                       │              ML PIPELINE (NEW)               │
-                       │                                              │
+                       │              ML PIPELINE (NEW)              │
+                       │                                             │
   creditcard.csv       │  Airflow DAG (Weekly / On-Demand)           │
-       │               │  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
-       │               │  │ Validate │→ │ Feature  │→ │ Retrain  │  │
-       │               │  │  Data    │  │  Eng +   │  │ XGBoost  │  │
-       │               │  └──────────┘  │  SMOTE   │  └────┬─────┘  │
+       │               │  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+       │               │  │ Validate │→ │ Feature  │→ │ Retrain  │   │
+       │               │  │  Data    │  │  Eng +   │  │ XGBoost  │   │
+       │               │  └──────────┘  │  SMOTE   │  └────┬─────┘   │
        │               │                └──────────┘       │         │
-       │               │  ┌──────────┐  ┌──────────┐  ┌───▼──────┐  │
-       │               │  │  Drift   │← │ Evidently│  │  MLflow  │  │
-       │               │  │ Detected?│  │  Report  │  │ Registry │  │
-       │               │  └────┬─────┘  └──────────┘  └──────────┘  │
-       │               │       │                                      │
+       │               │  ┌──────────┐  ┌──────────┐  ┌───▼──────┐   │
+       │               │  │  Drift   │← │ Evidently│  │  MLflow  │   │
+       │               │  │ Detected?│  │  Report  │  │ Registry │   │
+       │               │  └────┬─────┘  └──────────┘  └──────────┘   │
+       │               │       │                                     │
        │               │  ┌────▼─────────────────┐                   │
-       │               │  │ Promote / Reject      │                   │
-       │               │  │ (Champion/Challenger) │                   │
+       │               │  │ Promote / Reject      │                  │
+       │               │  │ (Champion/Challenger) │                  │
        │               │  └──────────────────────┘                   │
        │               └──────────────┬──────────────────────────────┘
        │                              │  Hot-swap fraud_model.joblib
